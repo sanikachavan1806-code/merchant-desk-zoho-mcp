@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mira Audio · Merchant desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@460;560;680&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/desk.css?v=17" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#f4f7fb" />
+        <path d="M7 23.5 15.2 8h3.2L10.2 23.5H7Z" fill="#2f6fed" />
+        <path d="M14.2 23.5 22.4 8H26l-8.2 15.5h-3.6Z" fill="#7eb0ff" />
+      </svg>
+      <div>
+        <p class="eyebrow">Merchant desk</p>
+        <h1>Mira Audio</h1>
+      </div>
+    </div>
+    <nav class="views" id="views" aria-label="Desk or Inspector">
+      <button type="button" class="on" data-view="desk">Desk</button>
+      <button type="button" data-view="inspector">Inspector</button>
+    </nav>
+    <div class="pills">
+      <span class="pill pill-lock">Read only</span>
+      <span class="pill" id="mode-pill">1 Oct 2026</span>
+      <span class="pill budget" id="budget-pill"><span id="budget-label">Budget</span><i id="budget-bar"></i></span>
+    </div>
+  </header>
+
+  <section class="insp" id="inspector" hidden>
+    <div class="insp-status">
+      <span class="pill pill-live" id="insp-conn">Connected</span>
+      <span class="pill" id="insp-server">Zoho MerchantOps</span>
+      <span class="pill">Same process as this desk</span>
+    </div>
+    <div class="insp-grid">
+      <aside class="panel insp-side">
+        <input id="insp-search" type="search" placeholder="Filter tools" aria-label="Filter MCP tools" />
+        <div class="insp-kinds" id="insp-kinds">
+          <button type="button" class="on" data-kind="tools">Tools</button>
+          <button type="button" data-kind="resources">Resources</button>
+          <button type="button" data-kind="prompts">Prompts</button>
+        </div>
+        <ul id="insp-list"></ul>
+      </aside>
+      <article class="panel" id="insp-detail">
+        <p class="muted">Pick a tool. The call goes through the same MCP server this desk uses.</p>
+      </article>
+    </div>
+  </section>
+
+  <form class="ask desk-only" id="ask-form">
+    <input id="ask" name="q" autocomplete="off" placeholder="Which paid orders are not invoiced?" aria-label="Ask a merchant question" />
+    <button type="submit">Ask</button>
+  </form>
+  <div class="prompts desk-only" id="prompts"></div>
+
+  <ol class="stepper desk-only" id="stepper" aria-label="How this answer was produced"></ol>
+
+  <section class="result desk-only">
+    <article class="panel" id="answer">
+      <p class="muted">Ask a question, or pick a card below.</p>
+    </article>
+    <article class="panel" id="toolcard">
+      <h2>Tool call</h2>
+      <p class="muted">Waiting.</p>
+    </article>
+  </section>
+
+  <main class="desk-only">
+    <section>
+      <h2>Today</h2>
+      <div class="tiles" data-group="today"></div>
+    </section>
+    <section>
+      <h2>Money</h2>
+      <div class="tiles" data-group="money"></div>
+    </section>
+    <section>
+      <h2>Stock</h2>
+      <div class="tiles" data-group="stock"></div>
+    </section>
+    <section class="panel sheds" id="warehouses">
+      <div class="month-head">
+        <div>
+          <h2>Warehouses</h2>
+          <p id="shed-note" class="muted">Mumbai and Bengaluru, available stock.</p>
+        </div>
+        <button type="button" class="floor-open" id="open-floor">Open floor</button>
+      </div>
+      <div class="shed-grid" id="shed-grid"></div>
+    </section>
+    <section>
+      <h2>Account</h2>
+      <div class="tiles" data-group="account"></div>
+    </section>
+    <section class="panel bounds" id="bounds">
+      <article>
+        <h2>The agent can</h2>
+        <p>Read orders, stock, both warehouses, invoices, and shipments. Match a Razorpay id already stored on the order. Explain cover, GST, and cash sitting in unsold stock.</p>
+      </article>
+      <article>
+        <h2>The agent cannot</h2>
+        <p>Create orders, move stock, email a customer, capture a payment, or delete a record. Ask it to transfer stock and the call is stored, then refused.</p>
+      </article>
+      <article>
+        <h2>This session</h2>
+        <p id="session-note">Demo fixture. Phone and email stay masked. Each tool call is one audit line: tool, status, latency.</p>
+      </article>
+    </section>
+    <section class="panel audit-panel">
+      <div class="month-head">
+        <div>
+          <h2>Audit log</h2>
+          <p class="muted">No search text, reasons, or contact fields.</p>
+        </div>
+      </div>
+      <ul id="audit"></ul>
+    </section>
+    <section class="panel month">
+      <div class="month-head">
+        <div>
+          <h2>Past 30 days</h2>
+          <p id="month-note">2 Sep – 1 Oct 2026</p>
+        </div>
+        <div class="month-stats" id="month-stats"></div>
+      </div>
+      <div id="month"></div>
+    </section>
+  </main>
+  <dialog class="floor" id="floor">
+    <div class="floor-bar">
+      <div>
+        <p class="eyebrow">Warehouse floor</p>
+        <h2 id="floor-title">Mumbai</h2>
+      </div>
+      <div class="floor-tabs" id="floor-tabs">
+        <button type="button" data-wh="wh_mum">Mumbai</button>
+        <button type="button" data-wh="wh_blr">Bengaluru</button>
+      </div>
+      <button type="button" class="floor-close" id="floor-close">Close</button>
+    </div>
+    <p class="muted" id="floor-note"></p>
+    <div class="floor-body">
+      <div class="floor-scroll"><div class="floor-map" id="floor-map"></div></div>
+      <aside id="floor-side"></aside>
+    </div>
+  </dialog>
+  <script src="/static/desk.js?v=18"></script>
+</body>
+</html>
